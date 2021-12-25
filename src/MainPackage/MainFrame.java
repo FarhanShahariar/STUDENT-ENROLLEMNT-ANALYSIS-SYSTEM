@@ -2,6 +2,8 @@ package MainPackage;
 
 
 
+import static MainPackage.NewClass.getFacultyId;
+import static MainPackage.NewClass.getFacultyName;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
@@ -147,7 +149,7 @@ public class MainFrame extends javax.swing.JFrame
     {
         String id = "";
         String str = idd;
-        id = str.substring(5, idd.length()-1);
+        id = str.substring(5, idd.length());
         return id;
     }
     
@@ -165,7 +167,7 @@ public class MainFrame extends javax.swing.JFrame
         Connection con = DriverManager.getConnection(connectionUrl);
         
         Statement st = con.createStatement();
-        ResultSet rs = st.executeQuery("SELECT course_id, section, capacity, enrolled, Room_id, FACULTY_FULL_NAME, semester, year, SCHOOL_TITLE FROM excelTable "
+        ResultSet rs = st.executeQuery("SELECT course_id, CREDIT_HOUR, section, capacity, enrolled, Room_id, FACULTY_FULL_NAME, semester, year, SCHOOL_TITLE FROM excelTable "
                 + "WHERE SEMESTER = '" + jComboBox1.getSelectedItem().toString() + "' AND YEAR = '" + yearTxt.getText() + "'");
         
         con = DriverManager.getConnection(connectionUrl);
@@ -174,9 +176,9 @@ public class MainFrame extends javax.swing.JFrame
         
         while (rs.next())
         {
-            String sql = "INSERT INTO OFFERED_COURSE (COURSE_ID,SECTION,CAPACITY,ENROLLED,ROOM_ID,FACULTY_ID,SEMESTER,YEAR,SCHOOL_ID) "
-                    + "VALUES('" + rs.getString(1) + "','" + rs.getString(2) + "','" + rs.getString(3) + "','" + rs.getString(4) + "', '" + rs.getString(5) + "', '" + getFacultyId(rs.getString(6)) + "', "
-                    + "'" + rs.getString(7) + "','" + rs.getString(8) + "', '" + rs.getString(9) + "')";
+            String sql = "INSERT INTO OFFERED_COURSE (COURSE_ID,CREDIT,SECTION,CAPACITY,ENROLLED,ROOM_ID,FACULTY_ID,SEMESTER,YEAR,SCHOOL_ID) "
+                    + "VALUES('" + rs.getString(1) + "','" + rs.getString(2) + "','" + rs.getString(3) + "','" + rs.getString(4) + "', '" + rs.getString(5) + "', "
+                    + "'" + (rs.getString(6)) + "', '" + getFacultyId(rs.getString(7)) + "','" + rs.getString(8) + "', '" + rs.getString(9) + "', '"+rs.getString(10)+"')";
             
             System.out.println(sql);
             
@@ -220,7 +222,7 @@ public class MainFrame extends javax.swing.JFrame
         Connection con = DriverManager.getConnection(connectionUrl);
         
         Statement st = con.createStatement();
-        ResultSet rs = st.executeQuery("SELECT Distinct FACULTY_FULL_NAME FROM excelTable");
+        ResultSet rs = st.executeQuery("SELECT Distinct FACULTY_FULL_NAME FROM excelTable order by FACULTY_FULL_NAME");
         
         con = DriverManager.getConnection(connectionUrl);
                     PreparedStatement pst = con.prepareStatement("DELETE FROM FACULTY");
@@ -229,13 +231,59 @@ public class MainFrame extends javax.swing.JFrame
         while (rs.next())
         {
             String sql = "INSERT INTO FACULTY (FACULTY_ID, FACULTY_FUL_NAME) VALUES('" + getFacultyId(rs.getString(1)) + "','" + getFacultyName(rs.getString(1)) + "')";
-                    System.out.println(sql);
-
-                    con = DriverManager.getConnection(connectionUrl);
-                    pst = con.prepareStatement(sql);
+            con = DriverManager.getConnection(connectionUrl);
+            pst = con.prepareStatement(sql);
+            pst.executeUpdate();
+                   
+            System.out.println(sql);
+        }
+        JOptionPane.showMessageDialog(null, "System Refreshed");
+    }
+    
+    public  void insertIntoCOURSEID() throws SQLException
+    {
+        String connectionUrl = "jdbc:sqlserver://localhost:1433;databaseName=SEAS;user=sa;password=123321";
+        Connection con = DriverManager.getConnection(connectionUrl);
+        
+        Statement st = con.createStatement();
+        ResultSet rs = st.executeQuery("SELECT Distinct FACULTY_FULL_NAME FROM excelTable order by FACULTY_FULL_NAME");
+        
+        con = DriverManager.getConnection(connectionUrl);
+                    PreparedStatement pst = con.prepareStatement("DELETE FROM FACULTY");
                     pst.executeUpdate();
-                    
-                    System.out.println(sql);
+        
+        while (rs.next())
+        {
+            String sql = "INSERT INTO FACULTY (FACULTY_ID, FACULTY_FUL_NAME) VALUES('" + getFacultyId(rs.getString(1)) + "','" + getFacultyName(rs.getString(1)) + "')";
+            con = DriverManager.getConnection(connectionUrl);
+            pst = con.prepareStatement(sql);
+            pst.executeUpdate();
+                   
+            System.out.println(sql);
+        }
+        JOptionPane.showMessageDialog(null, "System Refreshed");
+    }
+    
+    public  void insertIntoSCHOOL() throws SQLException
+    {
+        String connectionUrl = "jdbc:sqlserver://localhost:1433;databaseName=SEAS;user=sa;password=123321";
+        Connection con = DriverManager.getConnection(connectionUrl);
+        
+        Statement st = con.createStatement();
+        ResultSet rs = st.executeQuery("SELECT Distinct FACULTY_FULL_NAME FROM excelTable order by FACULTY_FULL_NAME");
+        
+        con = DriverManager.getConnection(connectionUrl);
+                    PreparedStatement pst = con.prepareStatement("DELETE FROM FACULTY");
+                    pst.executeUpdate();
+        
+        while (rs.next())
+        {
+            String sql = "INSERT INTO FACULTY (FACULTY_ID, FACULTY_FUL_NAME) VALUES('" + getFacultyId(rs.getString(1)) + "','" + getFacultyName(rs.getString(1)) + "')";
+            con = DriverManager.getConnection(connectionUrl);
+            pst = con.prepareStatement(sql);
+            pst.executeUpdate();
+                   
+            System.out.println(sql);
         }
         JOptionPane.showMessageDialog(null, "System Refreshed");
     }
@@ -259,11 +307,7 @@ public class MainFrame extends javax.swing.JFrame
         jLabel7 = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
         jComboBox5 = new javax.swing.JComboBox<>();
-        jComboBox10 = new javax.swing.JComboBox<>();
-        jComboBox11 = new javax.swing.JComboBox<>();
         jPanel5 = new javax.swing.JPanel();
         jComboBox4 = new javax.swing.JComboBox<>();
         jLabel10 = new javax.swing.JLabel();
@@ -392,28 +436,10 @@ public class MainFrame extends javax.swing.JFrame
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("Year");
 
-        jLabel9.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("Semester");
-
-        jLabel6.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("Semester");
-
         jComboBox5.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jComboBox5.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2021", "2020" }));
         jComboBox5.setToolTipText("");
         jComboBox5.setOpaque(false);
-
-        jComboBox10.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jComboBox10.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Spring", "Summer", "Autumn" }));
-        jComboBox10.setToolTipText("");
-        jComboBox10.setBorder(null);
-
-        jComboBox11.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jComboBox11.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Spring", "Summer", "Autumn" }));
-        jComboBox11.setToolTipText("");
-        jComboBox11.setBorder(null);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -421,46 +447,30 @@ public class MainFrame extends javax.swing.JFrame
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox10, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(25, 25, 25)
-                        .addComponent(jLabel7))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel9)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox11, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel8)))
+                .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(20, 20, 20)
+                .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(78, 78, 78)
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jButton4)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(199, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                        .addGap(13, 13, 13)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7)
                             .addComponent(jComboBox3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6)
-                            .addComponent(jComboBox10, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(26, 26, 26)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel9)
                             .addComponent(jLabel8)
-                            .addComponent(jComboBox5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox11, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(20, 20, 20))
+                            .addComponent(jComboBox5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(71, 71, 71))
         );
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)), "Revenue Report"));
@@ -751,6 +761,8 @@ public class MainFrame extends javax.swing.JFrame
                 JOptionPane.showMessageDialog(rootPane, "Data Uploaded");
                 insertIntoROOM();
                 insertIntoFACULTY();
+                //insertIntoCOURSEID();
+                //insertIntoSCHOOL();
                 insertIntoOfferCourse();
                     
             }
@@ -813,8 +825,6 @@ public class MainFrame extends javax.swing.JFrame
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     public static javax.swing.JComboBox<String> jComboBox1;
-    public static javax.swing.JComboBox<String> jComboBox10;
-    public static javax.swing.JComboBox<String> jComboBox11;
     private javax.swing.JComboBox<String> jComboBox12;
     private javax.swing.JComboBox<String> jComboBox13;
     private javax.swing.JComboBox<String> jComboBox14;
@@ -828,10 +838,8 @@ public class MainFrame extends javax.swing.JFrame
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

@@ -30,8 +30,7 @@ public class NewClass
     public static void generateRevenueReport()
     {
         String FILE = "Revenue Report.pdf";
-        String from = MainFrame.jComboBox10.getSelectedItem().toString()+" "+MainFrame.jComboBox3.getSelectedItem().toString(), 
-                to = MainFrame.jComboBox11.getSelectedItem().toString() + " " + MainFrame.jComboBox5.getSelectedItem().toString();
+        
         try 
         {
             Document document = new Document(PageSize.A4);
@@ -64,7 +63,7 @@ public class NewClass
             document.add(paragraph);
                     
             myFont.setSize(15);
-            paragraph = new Paragraph("Period: "+from+" – "+to, myFont);
+            paragraph = new Paragraph("Period: ", myFont);
             paragraph.setAlignment(Element.ALIGN_CENTER);
             document.add(paragraph);
             
@@ -386,7 +385,21 @@ public class NewClass
         }
     }
     
+    public static String getFacultyId(String idd)
+    {
+        String id = "";
+        String str = idd;
+        id = str.substring(0, 4);
+        return id;
+    }
     
+    public static String getFacultyName(String idd)
+    {
+        String id = "";
+        String str = idd;
+        id = str.substring(5, idd.length());
+        return id;
+    }
     
     public static void main(String args []) throws SQLException
     {
@@ -398,6 +411,7 @@ public class NewClass
         System.out.println(id);
         
 
+        
     }
     
 }
