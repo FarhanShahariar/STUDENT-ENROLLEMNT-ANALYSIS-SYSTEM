@@ -1,6 +1,9 @@
 package MainPackage;
 
 
+import static MainPackage.MainFrame.jComboBox1;
+import static MainPackage.MainFrame.yearTxt;
+import com.itextpdf.awt.PdfGraphics2D;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -12,21 +15,89 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import javax.swing.JOptionPane;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
 
 
 public class NewClass 
 {
+     public static DefaultCategoryDataset createDataset() throws SQLException {
+
+        String semester;
+        String SBE;
+        String SETS;
+        String SELS;
+        String SLASS;
+        String SPPH;
+        String Total;
+        String Change;
+
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        String connectionUrl = "jdbc:sqlserver://localhost:1433;databaseName=SEAS;user=sa;password=123321";
+            Connection con = DriverManager.getConnection(connectionUrl);
+        
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("Select SEMESTER, year, SCHOOL_id, sum(Credit*ENROLLED) FROM OFFERED_COURSE where  year >= 2021 and  year <= 2021 group by SEMESTER, YEAR, "
+                    + "SCHOOL_id order by YEAR");
+            while(rs.next()){
+            
+        dataset.addValue(Integer.valueOf(rs.getString(4)), rs.getString(3) , rs.getString(1)+" "+rs.getString(2));
+            }
+        
+        /*dataset.addValue(150, series1, "2016-12-20");
+        dataset.addValue(100, series1, "2016-12-21");
+        dataset.addValue(210, series1, "2016-12-22");
+        dataset.addValue(240, series1, "2016-12-23");
+        dataset.addValue(195, series1, "2016-12-24");
+        dataset.addValue(245, series1, "2016-12-25");
+
+        dataset.addValue(150, series2, "2016-12-19");
+        dataset.addValue(130, series2, "2016-12-20");
+        dataset.addValue(95, series2, "2016-12-21");
+        dataset.addValue(195, series2, "2016-12-22");
+        dataset.addValue(200, series2, "2016-12-23");
+        dataset.addValue(180, series2, "2016-12-24");
+        dataset.addValue(230, series2, "2016-12-25");*/
+
+        return dataset;
+    }
+     
+    public static JFreeChart lineChart() throws SQLException 
+    {
+	DefaultCategoryDataset dataset = createDataset();  
+        
+        JFreeChart chart = ChartFactory.createLineChart( "Revenue Trend of the schools", // Chart title  
+        "Semester", // X-Axis Label  
+        "Credit Hour", // Y-Axis Label  
+        dataset ,PlotOrientation.VERTICAL,
+         true,true,false
+        );  
+
+      
+        return chart;
+    }
+    
+    
     public static void generateRevenueReport()
     {
         String FILE = "Revenue Report.pdf";
@@ -34,7 +105,7 @@ public class NewClass
         try 
         {
             Document document = new Document(PageSize.A4);
-            PdfWriter.getInstance(document, new FileOutputStream(FILE));
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(FILE));
             document.setMargins(45f, 45f, 50f, 50f);
             
             Font myFont = new Font(FontFamily.TIMES_ROMAN); 
@@ -147,10 +218,41 @@ public class NewClass
             cell8.setBackgroundColor(new BaseColor(237, 125, 49));
             cell8.setColspan(5);
             table.addCell(cell8);
+            
+            
+            List<productBean> list = new ArrayList<>();
+            
+            String connectionUrl = "jdbc:sqlserver://localhost:1433;databaseName=SEAS;user=sa;password=123321";
+            Connection con = DriverManager.getConnection(connectionUrl);
+        
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("Select SEMESTER, year, SCHOOL_id, sum(Credit*ENROLLED) FROM OFFERED_COURSE where  year >= 2021 and  year <= 2021 group by SEMESTER, YEAR, "
+                    + "SCHOOL_id order by YEAR");
+            
+            list.add(new productBean("Semester", "SBE", "SETS", "SELS", "SLASS", "SPPH", "Total", "Change"));
+            
+            System.out.println(list.toString());
+            
+            Iterator itr = list.iterator();  
+                //traversing elements of ArrayList object  
+                while(itr.hasNext()){  
+                  productBean p = (productBean)itr.next();  
+                  System.out.println(" "+p.Change+" "+p.SBE);  
+                }  
 
-            for (int i = 0; i < 100; i++) 
+            //for (int i = 0; i < 100; i++) 
+            
+            int i = 0;
+            while(rs.next())
             {
-                String prod = "555", bran = "", sqnt = "", rat = "", tota = "", suplr = "", detl = "", mod = "", war = "";
+                
+            }
+            
+            
+            
+            
+            {
+                String prod = "", bran = "", sqnt = "", rat = "", tota = "", suplr = "", detl = "", mod = "", war = "";
 
                 myFont = FontFactory.getFont(FontFactory.HELVETICA, 8);
 
@@ -219,15 +321,26 @@ public class NewClass
                 su.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 su.setBackgroundColor(new BaseColor(r, g, b));
                 table.addCell(su);
+                
+                i++;
             }
 
             document.add(table); 
             
             
+            PdfContentByte cb = writer.getDirectContent();
+            float width = PageSize.A4.getWidth();
+            float height = PageSize.A4.getHeight() / 2;
+            // Pie chart
+            PdfTemplate pie = cb.createTemplate(width, height);
+            Graphics2D g2d1 = new PdfGraphics2D(pie, width, height);
+            Rectangle2D r2d1 = new Rectangle2D.Double(0, 0, width, height);
+            lineChart().draw(g2d1, r2d1);
+            g2d1.dispose();
+            cb.addTemplate(pie, 0, height);
             
             
-            
-            
+           /* 
             document.newPage();
             myFont = FontFactory.getFont(FontFactory.TIMES_BOLD, 12);
             paragraph = new Paragraph("Revenue in Engineering School:", myFont);
@@ -376,7 +489,7 @@ public class NewClass
             }
 
             document.add(table2); 
-
+*/
             document.close();
         } 
         catch (Exception e) 
@@ -403,13 +516,13 @@ public class NewClass
     
     public static void main(String args []) throws SQLException
     {
-        //generateRevenueReport();
+        generateRevenueReport();
   
-        String id = "";
+        /*String id = "";
         String str = "4275-MS Tahsin F. Ara Nayna";
         id = str.substring(5, str.length()-1);
         System.out.println(id);
-        
+        */
 
         
     }
