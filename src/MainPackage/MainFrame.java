@@ -1,3 +1,5 @@
+package MainPackage;
+
 
 
 import com.itextpdf.text.Document;
@@ -274,7 +276,6 @@ public class MainFrame extends javax.swing.JFrame
         jComboBox14 = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(672, 473));
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(51, 153, 255));
